@@ -14,6 +14,7 @@ positive and negative sentiment words have been provided,
 but the sentiment140 dataset must be retrieved here:
 https://www.kaggle.com/kazanova/sentiment140
 sentiment_analysis.py encodes the sentiment140 dataset into training and test data splits
+a sample training dataset is contained in the file "sample training dataset.csv"
 
 training.py
 update the TODOs in the file with paths to the data
@@ -27,6 +28,7 @@ Run TweepyScrapper.py. Make sure to first manually create csv files called
 Tweets-ps, Tweets-xbox and Tweets-all with the following index:
 'id', 'username', 'retweetcount', 'text', 'tweetcreatedts', 'likes', 'hashtags',
 'followers', 'location'
+a sample analysis dataset is contained in the file "sample analysis dataset.csv"
 
 Tweets Analysis:
 Make sure Analysis.py and the three csv files are in same directory. Update the 
