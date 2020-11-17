@@ -1,3 +1,10 @@
+Accomplishments
+Yuying: preliminary research, contributed to writeup of phase 1 & 2, scheduled team meetings, contributed to final report and presentation
+
+Nishith: setup a twitter scrapper that crawls twitter search for tweets related to consoles, perform analysis on the collected tweets, created visualisation and wrote the analysis for final report
+
+Sam: preliminary research, contributed to writeup of phase 1 & 2, worked on preprocessing, trained models , contributed to final report and presentation
+
 How to run the codebase:
 
 sentiment_analysis.py:
