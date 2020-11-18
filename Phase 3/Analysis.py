@@ -7,27 +7,19 @@ Original file is located at
     https://colab.research.google.com/drive/1ds9i9R1cXmvPXxwfRQO6hrLyM500CD1S
 """
 
-from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize
 import re
-import string
-import gensim 
 from gensim.models import Word2Vec
-from sklearn.feature_extraction.text import TfidfVectorizer
-from keras.models import Sequential
-from keras.layers import Dense
-import matplotlib.pyplot as plt
-import datetime as dt
 from tensorflow import keras
 nltk.download('stopwords')
 nltk.download('punkt')
 
-xbox = pd.read_csv('Tweets-xbox.csv')
-ps = pd.read_csv('Tweets-ps2.csv')
+xbox = pd.read_csv('Tweets-xbox.csv', encoding='latin-1')
+ps = pd.read_csv('Tweets-ps.csv', encoding='latin-1')
 
 POS_WORDS_PATH = 'positive_words.txt'
 NEG_WORDS_PATH = 'negative_words.txt'
@@ -40,7 +32,7 @@ def parse_word_file(filename):
         words.add(line.strip())
   return words
 
-# TODO: read this in from somewhere
+
 POS_WORDS = parse_word_file(POS_WORDS_PATH)
 NEG_WORDS = parse_word_file(NEG_WORDS_PATH)
 
@@ -69,6 +61,7 @@ def prepare(text):
       tokens.append(word)
   return " ".join(tokens)
 
+
 xbox_text = xbox_text.apply(lambda text : prepare(text))
 ps_text = ps_text.apply(lambda text : prepare(text))
 
@@ -83,7 +76,7 @@ print(len(corpus))
 w2v = Word2Vec(corpus, size=WINDOW_SIZE, window=5,  min_count=5, workers=4)
 # train the model
 w2v.train(corpus, total_examples=len(w2v.wv.vocab), epochs=10)
-# TODO compute TFIDF for more accurate encodings
+
 
 def count_word_sentiment(text, words):
   count = 0
@@ -135,8 +128,9 @@ datewise_ps = result_ps.groupby(result_ps['date']).mean()
 
 #Combine the two datasets
 final = pd.concat([datewise_xbox, datewise_ps[0]], axis=1, sort=False)
-final.columns = ['xbox', 'ps']
+final.columns = ['Xbox', 'PS5']
 final.index = pd.to_datetime(final.index).strftime('%d-%m-%Y')
+final.to_csv('final.csv',index = True)
 
 # Divide into positive and negative sentiment
 result_ps['sentiment'] = result_ps[0].apply(lambda x: True if x>=0.5 else False)
@@ -147,42 +141,12 @@ sentiment_ps = result_ps.groupby(['date', 'sentiment']).size().unstack(fill_valu
 sentiment_xbox = result_xbox.groupby(['date', 'sentiment']).size().unstack(fill_value=0)
 
 # Get ratio of negative to positive sentiment
-sentiment_ps['PS5'] = sentiment_ps[sentiment_ps.columns[1]]/sentiment_ps[sentiment_ps.columns[2]]
-sentiment_xbox['Xbox'] = sentiment_xbox[sentiment_xbox.columns[1]]/sentiment_xbox[sentiment_xbox.columns[2]]
-
+sentiment_ps['PS5'] = sentiment_ps[sentiment_ps.columns[0]]/sentiment_ps[sentiment_ps.columns[1]]
+sentiment_xbox['Xbox'] = sentiment_xbox[sentiment_xbox.columns[0]]/sentiment_xbox[sentiment_xbox.columns[1]]
 # Combine results
-comparison = pd.concat([sentiment_xbox, sentiment_ps[sentiment_ps.columns[3]]], axis=1, sort=False)
+comparison = pd.concat([sentiment_xbox, sentiment_ps[sentiment_ps.columns[2]]], axis=1, sort=False)
 
-del comparison[comparison.columns[1]]
-del comparison[comparison.columns[2]]
+del comparison[comparison.columns[0]]
+del comparison[comparison.columns[0]]
 
-comparison.to_csv('comparison.csv',index = False)
-final.to_csv('final.csv',index = False)
-
-
-# Create plots
-final = pd.read_csv('final.csv', parse_dates = ['date'])
-final.plot(x = 'date')
-plt.xlabel('Month', fontsize=16)
-plt.ylabel('Avg Sentiment', fontsize=16)
-plt.axvline(x = dt.datetime(2020, 6, 11), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 6, 11), 1,"11 Jun",rotation=90)
-plt.axvline(x = dt.datetime(2020, 9, 7), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 9, 7), 1,"7 Sep",rotation=90)
-plt.axvline(x = dt.datetime(2020, 9, 16), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 9, 16), 1,"16 Sep",rotation=90)
-plt.axvline(x = dt.datetime(2020, 7, 23), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 7, 23), 1,"23 Jul",rotation=90)
-plt.axvline(x = dt.datetime(2020, 8, 11), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 8, 11), 1,"11 Aug",rotation=90)
-plt.axvline(x = dt.datetime(2020, 9, 21), label = 'hello',ls = '--',color='r')
-plt.text(dt.datetime(2020, 9, 21), 1,"21 Sep",rotation=90)
-plt.tight_layout()
-plt.savefig('console_analysis.png')
-
-comparison = pd.read_csv('comparison.csv', parse_dates = ['date'])
-comparison.plot(x = 'Date')
-plt.xlabel('Month', fontsize=16)
-plt.ylabel('Ratio of Negative Tweets', fontsize=16)
-plt.tight_layout()
-plt.savefig('console_negative.png')
+comparison.to_csv('comparison.csv',index = True)
