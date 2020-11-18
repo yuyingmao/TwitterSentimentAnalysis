@@ -44,14 +44,15 @@ def fetch_tweets(ids, df):
 
 def main():
     start_date = date(2020, 6, 1)
-    end_date = date(2020, 11, 14)
+    end_date = date(2020, 6, 3)
     delta = timedelta(days=1)
     while start_date < end_date:
         os.system('snscrape --max-results 300 twitter-search "(xbox series s OR xbox series x OR xbox OR xsx OR xss) -win lang:en until:' + str(start_date+delta) + 'since:'+str(start_date)+'" > ' + str(start_date) + '.txt')
         file = open(str(start_date)+".txt", "r").readlines()
         ids = get_ids(file)
         df = pd.DataFrame(columns=['id', 'username', 'retweetcount', 'text', 'tweetcreatedts',
-                                   'likes', 'hashtags', 'followers', 'location'])
+                                   'likes', 'hashtags', 'followers', 'location', 'created_at'])
+        df.to_csv(f"Tweets-xbox.csv", mode='a', header=True, index=False)
         for i in range(3):
             tweets = fetch_tweets(ids[i*100:(i+1)*100], df)
             tweets.to_csv(f"Tweets-xbox.csv", mode='a', header=False, index = False)
@@ -60,7 +61,8 @@ def main():
         file = open(str(start_date)+".txt", "r").readlines()
         ids = get_ids(file)
         df = pd.DataFrame(columns=['id', 'username', 'retweetcount', 'text', 'tweetcreatedts',
-                                   'likes', 'hashtags', 'followers', 'location'])
+                                   'likes', 'hashtags', 'followers', 'location', 'created_at'])
+        df.to_csv(f"Tweets-ps.csv", mode='a', header=True, index=False)
         for i in range(3):
             tweets = fetch_tweets(ids[i*100:(i+1)*100], df)
             tweets.to_csv(f"Tweets-ps.csv", mode='a', header=False, index = False)
@@ -70,8 +72,7 @@ def main():
 
     result = pd.concat([ps, xbox])
     final = result.drop_duplicates(subset=['id'])
-
-    final.to_csv(f"Tweets-all.csv", mode='a', header=False, index=False)
+    final.to_csv(f"Tweets-all.csv", mode='a', header=True, index=False)
 
 
 if __name__ == '__main__':
