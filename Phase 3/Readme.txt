@@ -24,15 +24,17 @@ it saves the neural net training out to a file
 
 Tweet Scrapping:
 
-Run TweepyScrapper.py. Make sure to first manually create csv files called 
-Tweets-ps, Tweets-xbox and Tweets-all with the following index:
-'id', 'username', 'retweetcount', 'text', 'tweetcreatedts', 'likes', 'hashtags',
-'followers', 'location'
+TweepyScrapper.py
+Run TweepyScrapper.py. Modify start and end dates in line 46 and 47 for testing on a smaller dataset.
+Warning: May result in errors if no negative tweets found in a small sample
 a sample analysis dataset is contained in the file "sample analysis dataset.csv"
 
 Tweets Analysis:
-Make sure Analysis.py and the three csv files are in same directory. Update the 
-location of keras model directory in line 116 if needed. Run analysis.py
+Make sure Analysis.py, Plots.py and the three csv files are in same directory. Update the 
+location of keras model directory in line 116 if needed. Run analysis.py.
+
+Analysis.py will create two files calles final.csv and comparion.csv. Open them and manually rename the first 
+column from blank to 'Date'. Run Plots.py to generate analysis plots.
 
 Results will be stored as final.csv, comparison.csv, console_analysis.png and 
 console_negative.png.
